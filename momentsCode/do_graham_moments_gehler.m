@@ -11,12 +11,12 @@ get_stuart_canon5D_filelist; % 482 images
 load 'allcanon5Dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
-datapath = 'Z:\lncsvml3\ImageData\Stuart_Gehler\'
+datapath = '/Users/crazyalan/GitHub/ColorConstancy/Gehler_Extras/'
 load(strcat(datapath,'illuminants'));
 alllights=illuminants; clear illuminants % 482 5DCimages
 
 % what is grey? (for this camera):
-alllightschrom3 = makechrom3vec(alllights);
+alllightschrom3 = makechrom3vec(alllights);  %Normalize the illuminants ? 
 % alllightschrom3mean = mean(alllightschrom3); %  0.2436    0.4276    0.3287
 % alllightschrom3mean0 = zeros(howmanycands,3);
 % for k=1:3
