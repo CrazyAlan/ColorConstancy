@@ -8,7 +8,7 @@ get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load 'allcanon5Dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load 'allcanon5dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 % datapath = 'Z:\lncsvml3\ImageData\Stuart_Gehler\'
