@@ -1,8 +1,7 @@
-% do_graham_moments_gehler_chrom.m
+% do_graham_moments_gehler_sparse.m
+%sparsity = floor(numlights/2) + 3; % For OMP and CS_MUSIC
+%func = @(A, obs)OMP_ming(A, obs, sparsity);
 
-% from: for_appletalkApr2012_canon1d.m
-
-% from:  do_canon1d_diividebylight.m (from do_canon1d.m)
 %
 get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
@@ -11,7 +10,11 @@ get_stuart_canon5D_filelist; % 482 images
 load 'allcanon5dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
+<<<<<<< HEAD
 datapath = '/Users/crazyalan/GitHub/ColorConstancy/Gehler_Extras/'
+=======
+datapath = '/grad/3/xca64/GitHub/ColorP/Gehler_Extras/'
+>>>>>>> origin/master
 load(strcat(datapath,'illuminants'));
 alllights=illuminants; clear illuminants % 482 5DCimages
 
@@ -65,34 +68,38 @@ for i=trainbot:traintop
     im=squeeze(allim(i,:,:));
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
+  im=makechrom3vec(im(:,:));
             %bright=ones(r*c,1);
      %M(i,:) = moments9(im);
-%       M(i,:) = [ moments9_geo(makechrom3vec(im(bright,:))) ...
-%           moments9(im)];
-im=makechrom3vec(im);
-%       [dx,dy] = makegradient(reshape(im,r,c,3));
-%     imedges= sqrt( dx.^2+dy.^2 );
-   % M(i,:) = moments9(reshape(imedges,r*c,3));
-%     imedges=reshape(imedges,r*c,3);
-    M(i,:) = [ moments8(im)];
-%M(i,:) = moments9_geo(makechrom3vec(im(:,:)));
-%M(i,:) = moments9(im);
+M(i,:) = [ moments8_geo(im(bright,:)) ...
+	      moments8(im)];
 end % for i
 
-%% Now get C and D:
+%% Now solve D M C = W sparsely:
+
 W = alllightschrom3(trainbot:traintop,:);
 D=eye(size(M,1)); % init
-C=zeros(size(M,1),3);
-MaxItn=100;
+C=zeros(size(M,2),3);
+Csparse=zeros(size(M,2),3);
+
+MaxItn=100; %%%%%%% 30 %%%%%%
+    sparsity = floor(size(M,1)/2) + 3; % For OMP and CS_MUSIC
+    %sparsity = floor(size(M,1)*3/4) + 3; % For OMP and CS_MUSIC
+    %warning off
 for j=1:MaxItn
+   disp(j);
     oldD=D;
     oldC=C;
     %
-    C=pinv(D*M)*W;
+%C=pinv(D*M)*W;
+for k=1:3
+    %Csparse(:,k) = OMP_ming(D*M, W(:,k), sparsity);
+    Csparse(:,k) = min_L1_error(D*M, W(:,k)); % Ikihata
+end
     %C=( mytikhonov_fixedAmountofregularization( (D*M)' ,W' ,1e-9) )' ;
     for k=1:size(M,1)
         % LS:
-        mc = M(k,:)*C; % 1x3
+        mc = M(k,:)*Csparse; % 1x3
         D(k,k)=pinv( mc*mc') *  (mc*W(k,:)');
     end % for k
 end % for j
@@ -108,19 +115,14 @@ for i=testindices
     im=squeeze(allim(i,:,:));
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
+  im=makechrom3vec(im(:,:));
             %bright=ones(r*c,1);
     %M(i,:) = moments9(im);
-%     anM =[ moments9_geo(makechrom3vec(im(bright,:))) ...
-%         moments9(im)];
-im=makechrom3vec(im);
-%     [dx,dy] = makegradient(reshape(im,r,c,3));
-%     imedges= sqrt( dx.^2+dy.^2 );
-   % M(i,:) = moments9(reshape(imedges,r*c,3));
-%     imedges=reshape(imedges,r*c,3);
-    anM = [  moments8(im)];
+    anM =[ moments8_geo(im(bright,:)) ...
+	      moments8(im)];
     %M(i,:) = moments9_geo(makechrom3vec(im(:,:)));
-%M(i,:) = moments9(imedges);
-    chromout(i,:) = makechrom3vec( anM*C );
+%M(i,:) = moments9(im);
+    chromout(i,:) = makechrom3vec( anM*Csparse );
     allangerrs(i) =  multiangle(alllightschrom3(i,:),chromout(i,:)); % degrees
 end % for i
 allangerrs(trainbot:traintop)=[];
@@ -129,7 +131,12 @@ hist(allangerrs)
 [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
     min(allangerrs), quantile(allangerrs,0.95)]
 
-% 3.1615    2.3213    2.5095    0.2737    9.1942
+%  3.1628    1.9380    2.3164    0.1023    9.7855
+
+
+
+
+
 
 %% PRIOR ART:
 allpriorerrs=zeros(howmanycands,4);
