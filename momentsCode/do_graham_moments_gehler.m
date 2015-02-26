@@ -66,8 +66,8 @@ A_idx = (1:floor(howmanycands/3));
 B_idx = (ceil(howmanycands/3) : floor(2*howmanycands/3));
 C_idx = (ceil(2*howmanycands/3) : howmanycands);
 
-train_idx = [A_idx C_idx];
-test_idx = [B_idx];
+train_idx = [B_idx C_idx];
+test_idx = [A_idx];
 
 for i=1:size(train_idx,2)
     im=squeeze(allim(train_idx(i),:,:));

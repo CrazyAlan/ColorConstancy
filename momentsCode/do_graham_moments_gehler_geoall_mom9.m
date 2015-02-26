@@ -56,23 +56,27 @@ E(B)
 clear D M C W % M=MomentsArray
 % and solve D(diag 86x86) * M(86x9) * C(9x3)=W(whitepint chroms, 86x3)
 %   for D and C:
-dim=9
+dim=19
 % M = zeros(howmanycands,dim);
 allim = reshape(allcanon5Dsmall,howmanycands,r*c,3);
 trainbot=1;
 traintop=floor(2*howmanycands/3) % 321
-for i=trainbot:traintop
-    im=squeeze(allim(i,:,:));
-        lum = sum(im,2);
-        bright = lum>quantile(lum,0.95);
-            %bright=ones(r*c,1);
-     %M(i,:) = moments9(im);
-      M(i,:) = [ moments9_geo(makechrom3vec(im)) ...
-          moments9(im)];
-%M(i,:) = moments9_geo(makechrom3vec(im(:,:)));
-%M(i,:) = moments9(im);
+
+A_idx = (1:floor(howmanycands/3));
+B_idx = (ceil(howmanycands/3) : floor(2*howmanycands/3));
+C_idx = (ceil(2*howmanycands/3) : howmanycands);
+
+train_idx = [A_idx C_idx];
+test_idx = [B_idx];
+
+for i=1:size(train_idx,2)
+    im=squeeze(allim(train_idx(i),:,:));
+    lum = sum(im,2);
+    bright = lum>quantile(lum,0.95);
+    M(i,:) = [ moments9_geo(makechrom3vec(im)) ...
+        moments9(im)];
 end % for i
-W = alllightschrom3(trainbot:traintop,:);
+W = alllightschrom3(train_idx,:);
 D=eye(size(M,1)); % init
 C=zeros(size(M,1),3);
 MaxItn=100;
@@ -97,7 +101,7 @@ testindices(trainbot:traintop)=[];
 chromout=zeros(howmanycands,3); % omit trainings later.
 allangerrs = zeros(howmanycands,1);
 % clear M
-for i=testindices
+for i=test_idx
     im=squeeze(allim(i,:,:));
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
@@ -110,7 +114,7 @@ for i=testindices
     chromout(i,:) = makechrom3vec( anM*C );
     allangerrs(i) =  multiangle(alllightschrom3(i,:),chromout(i,:)); % degrees
 end % for i
-allangerrs(trainbot:traintop)=[];
+allangerrs(train_idx)=[];
 hist(allangerrs)
 % RESULTS:
 [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
@@ -121,37 +125,38 @@ hist(allangerrs)
 % 3.2470    2.3237    2.4964    0.0456    8.6559
 % AND USING BOTH: 2.8162    2.1978    2.1718    0.0941    7.747
 
+% 
+% %% PRIOR ART:
+% allpriorerrs=zeros(howmanycands,4);
+% for iii=1:howmanycands % iii=22
+%     disp(iii);
+%     im = squeeze(allcanon5Dsmall(iii,:,:,:));
+%     im(im==0) = 1/256;
+%     [r,c,n3]=size(im); % 256 170 3
+%     correctii = iii;
+%              maxrgb = zeros(3,1);
+%             greyrgb = zeros(3,1);
+%             minkrgb = zeros(3,1); pnorm=6;
+%             greyedgergb = zeros(3,1);
+%              [dx,dy] = makegradient(im);
+%             for k=1:3
+%                 maxrgb(k)=max(max(im(:,:,k)));
+%                 greyrgb(k) = mean(mean(im(:,:,k)));
+%                 minkrgb(k) = (1/(r*c)^(1/pnorm)) * (sum(sum( (im(:,:,k).^pnorm))))^(1/pnorm);
+%                 greyedgergb(k)=mean(mean( sqrt( dx(:,:,k).^2+dy(:,:,k).^2 ) ));
+%             end
+%             maxrgbchrom = maxrgb/sum(maxrgb); % 0.4010    0.4101    0.1889
+%             greyrgbchrom = greyrgb/sum(greyrgb); % 0.3734    0.4184    0.2082
+%             minkrgbchrom = minkrgb/sum(minkrgb); % 0.3734    0.4184    0.2082
+%             greyedgergbchrom = greyedgergb/sum(greyedgergb);
+%             allpriorerrs(iii,:)=( multiangle(repmat(alllightschrom3(correctii,:),[4 1]),...
+%                 [maxrgbchrom';greyrgbchrom';minkrgbchrom';greyedgergbchrom']) )';%
+% end; % for iii
+% % RESULTS:
+% [mean(allpriorerrs(:,4)), median(allpriorerrs(:,4)),...
+%     trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
+%     quantile(allpriorerrs(:,4),0.95)]
+% % 4.7835    3.8740    4.1539    0.1092   11.1252
 
-%% PRIOR ART:
-allpriorerrs=zeros(howmanycands,4);
-for iii=1:howmanycands % iii=22
-    disp(iii);
-    im = squeeze(allcanon5Dsmall(iii,:,:,:));
-    im(im==0) = 1/256;
-    [r,c,n3]=size(im); % 256 170 3
-    correctii = iii;
-             maxrgb = zeros(3,1);
-            greyrgb = zeros(3,1);
-            minkrgb = zeros(3,1); pnorm=6;
-            greyedgergb = zeros(3,1);
-             [dx,dy] = makegradient(im);
-            for k=1:3
-                maxrgb(k)=max(max(im(:,:,k)));
-                greyrgb(k) = mean(mean(im(:,:,k)));
-                minkrgb(k) = (1/(r*c)^(1/pnorm)) * (sum(sum( (im(:,:,k).^pnorm))))^(1/pnorm);
-                greyedgergb(k)=mean(mean( sqrt( dx(:,:,k).^2+dy(:,:,k).^2 ) ));
-            end
-            maxrgbchrom = maxrgb/sum(maxrgb); % 0.4010    0.4101    0.1889
-            greyrgbchrom = greyrgb/sum(greyrgb); % 0.3734    0.4184    0.2082
-            minkrgbchrom = minkrgb/sum(minkrgb); % 0.3734    0.4184    0.2082
-            greyedgergbchrom = greyedgergb/sum(greyedgergb);
-            allpriorerrs(iii,:)=( multiangle(repmat(alllightschrom3(correctii,:),[4 1]),...
-                [maxrgbchrom';greyrgbchrom';minkrgbchrom';greyedgergbchrom']) )';%
-end; % for iii
-% RESULTS:
-[mean(allpriorerrs(:,4)), median(allpriorerrs(:,4)),...
-    trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
-    quantile(allpriorerrs(:,4),0.95)]
-% 4.7835    3.8740    4.1539    0.1092   11.1252
 
 
