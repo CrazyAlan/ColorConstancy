@@ -29,9 +29,12 @@ trainbot=1;
 traintop=floor(2*howmanycands/3) % 321
 
 K = 5;
-% Generate cross-validation indices
-cv_folds = crossvalind('Kfold', howmanycands, K); 
-results = zeros(K,5);
+run_times = 10;
+results = zeros(K*run_times,5);
+
+for t=1:runtimes
+    % Generate cross-validation indices
+    cv_folds = crossvalind('Kfold', howmanycands, K); 
 
 for k=1:K
     
@@ -89,12 +92,12 @@ for k=1:K
         allangerrs(i) =  multiangle(chrom_truth(i,:),chromout(i,:)); % degrees
     end % for i
    
-   results(k,:) =  [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
+   results(t*K+k,:) =  [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
         min(allangerrs), quantile(allangerrs,0.95)];
-    results(k,:)
+    results(t*K+k,:)
     % 3.2526    2.4019    2.5301    0.0396    8.5540
 end
-
+end
 mea = mean(results)
 std1 = std(results)
 

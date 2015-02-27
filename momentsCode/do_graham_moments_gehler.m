@@ -29,9 +29,12 @@ trainbot=1;
 traintop=floor(2*howmanycands/3) % 321
 
 K = 5;
-% Generate cross-validation indices
-cv_folds = crossvalind('Kfold', howmanycands, K); 
-results = zeros(K,5);
+run_times = 10;
+results = zeros(K*run_times,5);
+
+for t=1:runtimes
+    % Generate cross-validation indices
+    cv_folds = crossvalind('Kfold', howmanycands, K); 
 
 for k=1:K
     
@@ -86,8 +89,11 @@ for k=1:K
     results(k,:)
     % 3.2526    2.4019    2.5301    0.0396    8.5540
 end
+end
 
-sum(results,1)./K
+mea = mean(results)
+std1 = std(results)
+
 % 
 % %% PRIOR ART:
 % allpriorerrs=zeros(howmanycands,4);
