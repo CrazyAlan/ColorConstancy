@@ -9,10 +9,10 @@ get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load 'allcanon5Dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load 'allcanon5dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
-datapath = '/Users/crazyalan/GitHub/ColorConstancy/Gehler_Extras/'
+datapath = '/grad/3/xca64/GitHub/ColorP/Gehler_Extras/'
 load(strcat(datapath,'illuminants'));
 alllights=illuminants; clear illuminants % 482 5DCimages
 
@@ -26,11 +26,11 @@ dim=8+8
 % M = zeros(howmanycands,dim);
 allim = reshape(allcanon5Dsmall,howmanycands,r*c,3);
 
-K = 5;
+K = 3;
 run_times = 10;
 results = zeros(K*run_times,5);
 
-for t=1:runtimes
+for t=1:run_times
     % Generate cross-validation indices
     cv_folds = crossvalind('Kfold', howmanycands, K); 
 
@@ -48,8 +48,10 @@ for t=1:runtimes
         
         for i=1:size(train_data,1)
             im=squeeze(train_data(i,:,:));
-            zeta = zetaIm(W(i,:),im);
-            bright = zeta<quantile(zeta,0.3);
+            lum = sum(im,2);
+            bright = lum>quantile(lum,0.95);
+%             zeta = zetaIm(W(i,:),im);
+%             bright = zeta<quantile(zeta,0.3);
             im=makechrom3vec(im);
             M(i,:) = [ moments8_geo(makechrom3vec(im(bright,:)))...
             moments8(im)];
@@ -95,9 +97,9 @@ for t=1:runtimes
             allangerrs(i) =  multiangle(chrom_truth(i,:),chromout(i,:)); % degrees
         end % for i
     
-    results(t*K + k,:) =  [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
+    results((t-1)*K + k,:) =  [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
             min(allangerrs), quantile(allangerrs,0.95)];
-        results(t*K + k,:)
+        results((t-1)*K + k,:)
         % 3.2526    2.4019    2.5301    0.0396    8.5540
     end
 end
