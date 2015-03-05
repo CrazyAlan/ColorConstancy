@@ -4,10 +4,11 @@
 
 % from:  do_canon1d_diividebylight.m (from do_canon1d.m)
 %
-get_stuart_canon5D_filelist; % 482 images
+%get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
+clear all;
 load 'allcanon5dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
