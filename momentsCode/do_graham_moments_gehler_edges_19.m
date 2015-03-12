@@ -8,8 +8,8 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/grayBall/grayBallImage.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
-allcanon5Dsmall = grayBallImage; clear grayBallImage;
+load ('../dataSet/grayBall/grayBallImageGamaCorrect.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+allcanon5Dsmall = grayBallImageGamaCorrect; clear grayBallImageGamaCorrect;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
