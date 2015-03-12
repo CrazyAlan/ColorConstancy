@@ -1,11 +1,11 @@
-% do_graham_moments_gehler_chrom_combo.m
+% do_graham_moments_gehler_edges.m
 
 % from: for_appletalkApr2012_canon1d.m
 
 % from:  do_canon1d_diividebylight.m (from do_canon1d.m)
 %
 clear all;
-get_stuart_canon5D_filelist; % 482 images
+%get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
@@ -23,9 +23,11 @@ alllightschrom3 = makechrom3vec(alllights);  %Normalize the illuminants ?
 clear D M C W % M=MomentsArray
 % and solve D(diag 86x86) * M(86x9) * C(9x3)=W(whitepint chroms, 86x3)
 %   for D and C:
-dim=8+8
+dim=3
 % M = zeros(howmanycands,dim);
 allim = reshape(allcanon5Dsmall,howmanycands,r*c,3);
+trainbot=1;
+traintop=floor(2*howmanycands/3) % 321
 
 K = 3;
 run_times = 10;
@@ -42,19 +44,20 @@ for k=1:K
     
     train_data = allim(train_idx,:,:);
     test_data = allim(test_idx,:,:);
-    
     M = [];
-    W = alllightschrom3(train_idx,:);
     
     for i=1:size(train_data,1)
         im=squeeze(train_data(i,:,:));
         lum = sum(im,2);
-        bright = lum>=quantile(lum,0.95);
-        im=makechrom3vec(im);
-        M(i,:) = [ moments8_geo(makechrom3vec(im(bright,:)))...
-        moments8(im)];
-    end % for i
+        bright = lum>quantile(lum,0.95);
+        
+        [dx,dy] = makegradient(reshape(im,r,c,3));
+        imedges= sqrt( dx.^2+dy.^2 );
+        imedges=reshape(imedges,r*c,3);
     
+        M(i,:) = moments3(imedges);
+    end % for i
+    W = alllightschrom3(train_idx,:);
     D=eye(size(M,1)); % init
     C=zeros(size(M,1),3);
     MaxItn=100;
@@ -79,11 +82,13 @@ for k=1:K
     for i=1:size(chrom_truth,1)
         im=squeeze(test_data(i,:,:));
         lum = sum(im,2);
-        bright = lum>=quantile(lum,0.95);
-        im=makechrom3vec(im);
+        bright = lum>quantile(lum,0.95);
+        
+        [dx,dy] = makegradient(reshape(im,r,c,3));
+        imedges= sqrt( dx.^2+dy.^2 );
+        imedges=reshape(imedges,r*c,3);
 
-        anM = [ moments8_geo(makechrom3vec(im(bright,:))) ...
-        moments8(im)];
+        anM = moments3(imedges);
         chromout(i,:) = makechrom3vec( anM*C );
         allangerrs(i) =  multiangle(chrom_truth(i,:),chromout(i,:)); % degrees
     end % for i
@@ -96,6 +101,7 @@ end
 end
 mea = mean(results)
 std1 = std(results)
+
 % 
 % %% PRIOR ART:
 % allpriorerrs=zeros(howmanycands,4);
@@ -128,6 +134,5 @@ std1 = std(results)
 %     trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
 %     quantile(allpriorerrs(:,4),0.95)]
 % % 4.7835    3.8740    4.1539    0.1092   11.1252
-
 
 
