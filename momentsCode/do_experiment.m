@@ -33,3 +33,12 @@ do_graham_moments_gehler_chromall_combo;
 fid = fopen('result.txt','a');
 fprintf(fid,strcat('Chrome & Bright & Zeta 8+8 : \n','Mean ',mat2str(mea,5),'\nStd ',mat2str(std1,4),'\n'));
 fclose(fid);
+
+% 
+% i=7;
+% figure;
+% im = squeeze(allcanon5Dsmall(i,:,:,:));
+% im2(:,:,1) = double(im(:,:,1))./illuminants(i,1);
+% im2(:,:,2) = double(im(:,:,2))./illuminants(i,2);
+% im2(:,:,3) = double(im(:,:,3))./illuminants(i,3);
+% imshow(im2);

@@ -9,12 +9,14 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('allcanon5dsmall.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('../dataSet/sfudataset/allImageOriginal.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+allcanon5Dsmall = allImage;clear allImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
-load('../dataSet/geler/Gehler_Extras/illuminants.mat');
-alllights=illuminants; clear illuminants % 482 5DCimages
+load('../dataSet/sfudataset/sfuIllum.mat');
+alllights=sfuIllum; clear sfuIllum % 482 5DCimages
+
 
 % what is grey? (for this camera):
 alllightschrom3 = makechrom3vec(alllights);  %Normalize the illuminants ? 
@@ -94,7 +96,7 @@ end
 mea = mean(results)
 std1 = std(results)
 
-% 
+
 % %% PRIOR ART:
 % allpriorerrs=zeros(howmanycands,4);
 % for iii=1:howmanycands % iii=22
@@ -122,8 +124,8 @@ std1 = std(results)
 %                 [maxrgbchrom';greyrgbchrom';minkrgbchrom';greyedgergbchrom']) )';%
 % end; % for iii
 % % RESULTS:
-% [mean(allpriorerrs(:,4)), median(allpriorerrs(:,4)),...
-%     trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
+% [mean(allpriorerrs(:,2)), median(allpriorerrs(:,2)),...
+%     trimean(allpriorerrs(:,2)), min(allpriorerrs(:,2)), ...
 %     quantile(allpriorerrs(:,4),0.95)]
 % % 4.7835    3.8740    4.1539    0.1092   11.1252
 

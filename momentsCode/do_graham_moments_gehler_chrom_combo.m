@@ -9,12 +9,14 @@ get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('allcanon5dsmall.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('../dataSet/sfudataset/allImageOriginal.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+allcanon5Dsmall = allImage;clear allImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
-load('../dataSet/geler/Gehler_Extras/illuminants.mat');
-alllights=illuminants; clear illuminants % 482 5DCimages
+load('../dataSet/sfudataset/sfuIllum.mat');
+alllights=sfuIllum; clear sfuIllum % 482 5DCimages
+
 
 % what is grey? (for this camera):
 alllightschrom3 = makechrom3vec(alllights);  %Normalize the illuminants ? 

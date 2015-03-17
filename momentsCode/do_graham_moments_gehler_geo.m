@@ -8,12 +8,13 @@ get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load 'allcanon5Dsmall.mat' allcanon5Dsmall % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('../dataSet/sfudataset/allImageOriginal.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+allcanon5Dsmall = allImage;clear allImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
-datapath = getenv('dataPath')
-load(strcat(datapath,'illuminants'));
-alllights=illuminants; clear illuminants % 482 5DCimages
+
+load('../dataSet/sfudataset/sfuIllum.mat');
+alllights=sfuIllum; clear sfuIllum % 482 5DCimages
 
 % what is grey? (for this camera):
 alllightschrom3 = makechrom3vec(alllights);
@@ -122,36 +123,36 @@ hist(allangerrs)
 % AND USING BOTH: 2.8162    2.1978    2.1718    0.0941    7.747
 
 
-%% PRIOR ART:
-allpriorerrs=zeros(howmanycands,4);
-for iii=1:howmanycands % iii=22
-    disp(iii);
-    im = squeeze(allcanon5Dsmall(iii,:,:,:));
-    im(im==0) = 1/256;
-    [r,c,n3]=size(im); % 256 170 3
-    correctii = iii;
-             maxrgb = zeros(3,1);
-            greyrgb = zeros(3,1);
-            minkrgb = zeros(3,1); pnorm=6;
-            greyedgergb = zeros(3,1);
-             [dx,dy] = makegradient(im);
-            for k=1:3
-                maxrgb(k)=max(max(im(:,:,k)));
-                greyrgb(k) = mean(mean(im(:,:,k)));
-                minkrgb(k) = (1/(r*c)^(1/pnorm)) * (sum(sum( (im(:,:,k).^pnorm))))^(1/pnorm);
-                greyedgergb(k)=mean(mean( sqrt( dx(:,:,k).^2+dy(:,:,k).^2 ) ));
-            end
-            maxrgbchrom = maxrgb/sum(maxrgb); % 0.4010    0.4101    0.1889
-            greyrgbchrom = greyrgb/sum(greyrgb); % 0.3734    0.4184    0.2082
-            minkrgbchrom = minkrgb/sum(minkrgb); % 0.3734    0.4184    0.2082
-            greyedgergbchrom = greyedgergb/sum(greyedgergb);
-            allpriorerrs(iii,:)=( multiangle(repmat(alllightschrom3(correctii,:),[4 1]),...
-                [maxrgbchrom';greyrgbchrom';minkrgbchrom';greyedgergbchrom']) )';%
-end; % for iii
-% RESULTS:
-[mean(allpriorerrs(:,4)), median(allpriorerrs(:,4)),...
-    trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
-    quantile(allpriorerrs(:,4),0.95)]
-% 4.7835    3.8740    4.1539    0.1092   11.1252
+% %% PRIOR ART:
+% allpriorerrs=zeros(howmanycands,4);
+% for iii=1:howmanycands % iii=22
+%     disp(iii);
+%     im = squeeze(allcanon5Dsmall(iii,:,:,:));
+%     im(im==0) = 1/256;
+%     [r,c,n3]=size(im); % 256 170 3
+%     correctii = iii;
+%              maxrgb = zeros(3,1);
+%             greyrgb = zeros(3,1);
+%             minkrgb = zeros(3,1); pnorm=6;
+%             greyedgergb = zeros(3,1);
+%              [dx,dy] = makegradient(im);
+%             for k=1:3
+%                 maxrgb(k)=max(max(im(:,:,k)));
+%                 greyrgb(k) = mean(mean(im(:,:,k)));
+%                 minkrgb(k) = (1/(r*c)^(1/pnorm)) * (sum(sum( (im(:,:,k).^pnorm))))^(1/pnorm);
+%                 greyedgergb(k)=mean(mean( sqrt( dx(:,:,k).^2+dy(:,:,k).^2 ) ));
+%             end
+%             maxrgbchrom = maxrgb/sum(maxrgb); % 0.4010    0.4101    0.1889
+%             greyrgbchrom = greyrgb/sum(greyrgb); % 0.3734    0.4184    0.2082
+%             minkrgbchrom = minkrgb/sum(minkrgb); % 0.3734    0.4184    0.2082
+%             greyedgergbchrom = greyedgergb/sum(greyedgergb);
+%             allpriorerrs(iii,:)=( multiangle(repmat(alllightschrom3(correctii,:),[4 1]),...
+%                 [maxrgbchrom';greyrgbchrom';minkrgbchrom';greyedgergbchrom']) )';%
+% end; % for iii
+% % RESULTS:
+% [mean(allpriorerrs(:,4)), median(allpriorerrs(:,4)),...
+%     trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
+%     quantile(allpriorerrs(:,4),0.95)]
+% % 4.7835    3.8740    4.1539    0.1092   11.1252
 
 
