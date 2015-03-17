@@ -9,7 +9,7 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/geler/allcanon5dsmall.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('./allcanon5dsmall.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
