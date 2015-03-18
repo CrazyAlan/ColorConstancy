@@ -9,13 +9,13 @@ get_stuart_canon5D_filelist; % 482 images
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/grayBall/grayBallImageGamaCorrect.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
-allcanon5Dsmall = grayBallImageGamaCorrect; clear grayBallImageGamaCorrect;
+load ('../dataSet/grayBall/grayBallImage.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+allcanon5Dsmall = grayBallImage; clear grayBallImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
 load('../dataSet/grayBall/grayBallIllum.mat');
-alllights=allIllum; clear allIllum % 482 5DCimages
+alllights=allIllum; clear allIllum % 482 5DCimage
 
 % what is grey? (for this camera):
 alllightschrom3 = makechrom3vec(alllights);  %Normalize the illuminants ? 
@@ -51,7 +51,7 @@ for k=1:K
         lum = sum(im,2);
         bright = lum>=quantile(lum,0.95);
         im=makechrom3vec(im);
-        M(i,:) = [ moments8_geo(makechrom3vec(im(bright,:)))...
+        M(i,:) = [ moments8_geo(makechrom3vec(im(:,:)))...
         moments8(im)];
     end % for i
     
@@ -82,7 +82,7 @@ for k=1:K
         bright = lum>=quantile(lum,0.95);
         im=makechrom3vec(im);
 
-        anM = [ moments8_geo(makechrom3vec(im(bright,:))) ...
+        anM = [ moments8_geo(makechrom3vec(im(:,:))) ...
         moments8(im)];
         chromout(i,:) = makechrom3vec( anM*C );
         allangerrs(i) =  multiangle(chrom_truth(i,:),chromout(i,:)); % degrees

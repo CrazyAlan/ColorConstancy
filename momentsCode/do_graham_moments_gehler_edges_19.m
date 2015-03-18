@@ -8,13 +8,13 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/grayBall/grayBallImageGamaCorrect.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
-allcanon5Dsmall = grayBallImageGamaCorrect; clear grayBallImageGamaCorrect;
+load ('../dataSet/grayBall/grayBallImage.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+allcanon5Dsmall = grayBallImage; clear grayBallImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
 load('../dataSet/grayBall/grayBallIllum.mat');
-alllights=allIllum; clear allIllum % 482 5DCimages
+alllights=allIllum; clear allIllum % 482 5DCimage
 
 % what is grey? (for this camera):
 alllightschrom3 = makechrom3vec(alllights);  %Normalize the illuminants ? 

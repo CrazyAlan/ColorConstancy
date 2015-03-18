@@ -10,17 +10,20 @@ fid = fopen('result.txt','a');
 fprintf(fid,strcat('Moments 19 : \n','Mean ',mat2str(mea,5),'\nStd ',mat2str(std1,4),'\n'));
 fclose(fid);
 
+
+fprintf('Now Testing Gehler Edge Moments 3 ... \n');
+do_graham_moments_gehler_edges_3;
+fid = fopen('result.txt','a');
+fprintf(fid,strcat('Edge Moments 3 : \n','Mean ',mat2str(mea,5),'\nStd ',mat2str(std1,4),'\n'));
+fclose(fid);
+
 fprintf('Now Testing Gehler Edge Moments 9 ... \n');
 do_graham_moments_gehler_edges;
 fid = fopen('result.txt','a');
 fprintf(fid,strcat('Edge Moments 9 : \n','Mean ',mat2str(mea,5),'\nStd ',mat2str(std1,4),'\n'));
 fclose(fid);
 
-fprintf('Now Testing Gehler Edge Moments 19 ... \n');
-do_graham_moments_gehler_edges_19;
-fid = fopen('result.txt','a');
-fprintf(fid,strcat('Edge Moments 19 : \n','Mean ',mat2str(mea,5),'\nStd ',mat2str(std1,4),'\n'));
-fclose(fid);
+
 
 fprintf('Now Testing Gehler Chrom & Bright ... \n');
 do_graham_moments_gehler_chrom_combo;
