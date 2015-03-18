@@ -49,7 +49,7 @@ for t=1:run_times
         for i=1:size(train_data,1)
             im=squeeze(train_data(i,:,:));
             lum = sum(im,2);
-            bright = lum>quantile(lum,0.95);
+            bright = lum>=quantile(lum,0.95);
 %             zeta = zetaIm(W(i,:),im);
 %             bright = zeta<quantile(zeta,0.3);
             im=makechrom3vec(im);
@@ -82,7 +82,7 @@ for t=1:run_times
             im=squeeze(test_data(i,:,:));
             im2 = im;
             lum = sum(im,2);
-            bright = lum>quantile(lum,0.95);
+            bright = lum>=quantile(lum,0.95);
             im=makechrom3vec(im);
             anM = [ moments8_geo(makechrom3vec(im(bright,:))) ...
             moments8(im)];
@@ -90,7 +90,7 @@ for t=1:run_times
             
             zeta = zetaIm(chromout(i,:),im2);
             
-            bright = zeta < quantile(zeta,0.3);
+            bright = zeta <= quantile(zeta,0.1);
             anM = [ moments8_geo(makechrom3vec(im(bright,:))) ...
                     moments8(im)];
             chromout(i,:) = makechrom3vec( anM*C );

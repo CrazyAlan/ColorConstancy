@@ -48,9 +48,9 @@ for k=1:K
     for i=1:size(train_data,1)
         im=squeeze(train_data(i,:,:));
         lum = sum(im,2);
-        bright = lum>quantile(lum,0.95);
+        bright = lum>=quantile(lum,0.95);
         im=makechrom3vec(im);
-        M(i,:) = [ moments8_geo(makechrom3vec(im))...
+        M(i,:) = [ moments8_geo(makechrom3vec(im(bright,:)))...
         moments8(im)];
     end % for i
     
@@ -78,10 +78,10 @@ for k=1:K
     for i=1:size(chrom_truth,1)
         im=squeeze(test_data(i,:,:));
         lum = sum(im,2);
-        bright = lum>quantile(lum,0.95);
+        bright = lum>=quantile(lum,0.95);
         im=makechrom3vec(im);
 
-        anM = [ moments8_geo(makechrom3vec(im)) ...
+        anM = [ moments8_geo(makechrom3vec(im(bright,:))) ...
         moments8(im)];
         chromout(i,:) = makechrom3vec( anM*C );
         allangerrs(i) =  multiangle(chrom_truth(i,:),chromout(i,:)); % degrees
