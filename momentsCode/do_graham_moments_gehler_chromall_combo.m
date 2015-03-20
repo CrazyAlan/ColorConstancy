@@ -87,12 +87,12 @@ for t=1:run_times
             im=makechrom3vec(im);
             anM = [ moments8_geo(makechrom3vec(im(bright,:))) ...
             moments8(im)];
-            chromout(i,:) = makechrom3vec( anM*C );-+
+            chromout(i,:) = makechrom3vec( anM*C );
             
             
             zeta = zetaIm(chromout(i,:),im2);
             
-            bright = zeta <= quantile(zeta,0.3);
+            bright = zeta <= quantile(zeta,0.1);
             anM = [ moments8_geo(makechrom3vec(im(bright,:))) ...
                     moments8(im)];
             chromout(i,:) = makechrom3vec( anM*C );
