@@ -9,7 +9,7 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/sfudataset/allImageFourthResolution.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('../dataSet/sfudataset/allImageOriginal.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 allcanon5Dsmall = allImage;clear allImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
@@ -30,8 +30,8 @@ trainbot=1;
 traintop=floor(2*howmanycands/3) % 321
 
 K = 3;
-run_times = 5;
-results = zeros(K*run_times,6);
+run_times = 10;
+results = zeros(K*run_times,5);
 
 for t=1:run_times
     % Generate cross-validation indices
@@ -51,16 +51,9 @@ for k=1:K
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
         
-        sigma=5; 
-    % imsmooth = imgaussfilt(reshape(im,r,c,3),sigma); % only in R2015 :(
-    H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
-    imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
-    [dx,dy] = makegradient(imsmooth);
-    imedges= sqrt( abs(dx).^2+abs(dy).^2 );
-  %  imedges= ( abs(dx).^7+abs(dy).^7 ).^(1/7);
-  %  imedges= sqrt(dx.^2+dy.^2);
-   % M(i,:) = moments9(reshape(imedges,r*c,3));
-    imedges=reshape(imedges,r*c,3);
+        [dx,dy] = makegradient(reshape(im,r,c,3));
+        imedges= sqrt( dx.^2+dy.^2 );
+        imedges=reshape(imedges,r*c,3);
     
         M(i,:) = moments9(imedges);
     end % for i
@@ -91,25 +84,17 @@ for k=1:K
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
         
-                sigma=5; 
-    % imsmooth = imgaussfilt(reshape(im,r,c,3),sigma); % only in R2015 :(
-    H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
-    imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
-    [dx,dy] = makegradient(imsmooth);
-    imedges= sqrt( dx.^2+dy.^2 );
-  %  imedges= ( abs(dx).^7+abs(dy).^7 ).^(1/7);
-  %  imedges= sqrt(dx.^2+dy.^2);
-   % M(i,:) = moments9(reshape(imedges,r*c,3));
-    imedges=reshape(imedges,r*c,3);
+        [dx,dy] = makegradient(reshape(im,r,c,3));
+        imedges= sqrt( dx.^2+dy.^2 );
+        imedges=reshape(imedges,r*c,3);
 
-    anM = moments9(imedges);
-
+        anM = moments9(imedges);
         chromout(i,:) = makechrom3vec( anM*C );
         allangerrs(i) =  multiangle(chrom_truth(i,:),chromout(i,:)); % degrees
     end % for i
    
    results((t-1)*K+k,:) =  [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
-        min(allangerrs), quantile(allangerrs,0.95) , max(allangerrs)];
+        min(allangerrs), quantile(allangerrs,0.95)];
     results((t-1)*K+k,:)
     % 3.2526    2.4019    2.5301    0.0396    8.5540
 end
@@ -117,37 +102,37 @@ end
 mea = mean(results)
 std1 = std(results)
 
- 
- %% PRIOR ART:
-%  allpriorerrs=zeros(howmanycands,4);
-%  for iii=1:howmanycands % iii=22
-%      disp(iii);
-%      im = squeeze(allcanon5Dsmall(iii,:,:,:));
-%      im(im==0) = 1/256;
-%      [r,c,n3]=size(im); % 256 170 3
-%      correctii = iii;
-%               maxrgb = zeros(3,1);
-%              greyrgb = zeros(3,1);
-%              minkrgb = zeros(3,1); pnorm=6;
-%              greyedgergb = zeros(3,1);
-%               [dx,dy] = makegradient(im);
-%              for k=1:3
-%                  maxrgb(k)=max(max(im(:,:,k)));
-%                  greyrgb(k) = mean(mean(im(:,:,k)));
-%                  minkrgb(k) = (1/(r*c)^(1/pnorm)) * (sum(sum( (im(:,:,k).^pnorm))))^(1/pnorm);
-%                  greyedgergb(k)=mean(mean( sqrt( dx(:,:,k).^2+dy(:,:,k).^2 ) ));
-%              end
-%              maxrgbchrom = maxrgb/sum(maxrgb); % 0.4010    0.4101    0.1889
-%              greyrgbchrom = greyrgb/sum(greyrgb); % 0.3734    0.4184    0.2082
-%              minkrgbchrom = minkrgb/sum(minkrgb); % 0.3734    0.4184    0.2082
-%              greyedgergbchrom = greyedgergb/sum(greyedgergb);
-%              allpriorerrs(iii,:)=( multiangle(repmat(alllightschrom3(correctii,:),[4 1]),...
-%                  [maxrgbchrom';greyrgbchrom';minkrgbchrom';greyedgergbchrom']) )';%
-%  end; % for iii
-%  % RESULTS:
-%  [mean(allpriorerrs(:,4)), median(allpriorerrs(:,4)),...
-%      trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
-%      quantile(allpriorerrs(:,4),0.95)]
-%  % 4.7835    3.8740    4.1539    0.1092   11.1252
 % 
-% 
+% %% PRIOR ART:
+% allpriorerrs=zeros(howmanycands,4);
+% for iii=1:howmanycands % iii=22
+%     disp(iii);
+%     im = squeeze(allcanon5Dsmall(iii,:,:,:));
+%     im(im==0) = 1/256;
+%     [r,c,n3]=size(im); % 256 170 3
+%     correctii = iii;
+%              maxrgb = zeros(3,1);
+%             greyrgb = zeros(3,1);
+%             minkrgb = zeros(3,1); pnorm=6;
+%             greyedgergb = zeros(3,1);
+%              [dx,dy] = makegradient(im);
+%             for k=1:3
+%                 maxrgb(k)=max(max(im(:,:,k)));
+%                 greyrgb(k) = mean(mean(im(:,:,k)));
+%                 minkrgb(k) = (1/(r*c)^(1/pnorm)) * (sum(sum( (im(:,:,k).^pnorm))))^(1/pnorm);
+%                 greyedgergb(k)=mean(mean( sqrt( dx(:,:,k).^2+dy(:,:,k).^2 ) ));
+%             end
+%             maxrgbchrom = maxrgb/sum(maxrgb); % 0.4010    0.4101    0.1889
+%             greyrgbchrom = greyrgb/sum(greyrgb); % 0.3734    0.4184    0.2082
+%             minkrgbchrom = minkrgb/sum(minkrgb); % 0.3734    0.4184    0.2082
+%             greyedgergbchrom = greyedgergb/sum(greyedgergb);
+%             allpriorerrs(iii,:)=( multiangle(repmat(alllightschrom3(correctii,:),[4 1]),...
+%                 [maxrgbchrom';greyrgbchrom';minkrgbchrom';greyedgergbchrom']) )';%
+% end; % for iii
+% % RESULTS:
+% [mean(allpriorerrs(:,4)), median(allpriorerrs(:,4)),...
+%     trimean(allpriorerrs(:,4)), min(allpriorerrs(:,4)), ...
+%     quantile(allpriorerrs(:,4),0.95)]
+% % 4.7835    3.8740    4.1539    0.1092   11.1252
+
+
