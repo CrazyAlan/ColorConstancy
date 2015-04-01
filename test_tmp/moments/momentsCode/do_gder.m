@@ -9,12 +9,12 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/sfudataset/allImageFourthResolution.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('/home/xca64/remote/GitHub/colorP/dataSet/sfudataset/allImageFourthResolutionNoFilter.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 allcanon5Dsmall = allImage;clear allImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
-load('../dataSet/sfudataset/sfuIllum.mat');
+load('/home/xca64/remote/GitHub/colorP/dataSet/sfudataset/sfuIllum.mat');
 alllights=sfuIllum; clear sfuIllum % 482 5DCimages
 
 % what is grey? (for this camera):
@@ -51,12 +51,21 @@ for k=1:K
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
         
-        sigma=5; 
-    % imsmooth = imgaussfilt(reshape(im,r,c,3),sigma); % only in R2015 :(
-    H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
-    imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
-    [dx,dy] = makegradient(imsmooth);
-    imedges= sqrt( abs(dx).^2+abs(dy).^2 );
+%         sigma=5; 
+%     % imsmooth = imgaussfilt(reshape(im,r,c,3),sigma); % only in R2015 :(
+%     H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
+%     imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
+%     [dx,dy] = makegradient(imsmooth);
+         mink_norm=7;    % any number between 1 and infinity
+         sigma=1.5;        % sigma 
+       im =   reshape(im,r,c,3);
+         [Rx,Gx,Bx] = norm_derivative(im,sigma,1);
+         clear imedges;
+         imedges(:,:,1) = Rx;
+         imedges(:,:,2) = Gx;
+         imedges(:,:,3) = Bx;
+         imedges = abs(imedges);
+   % imedges= sqrt( abs(dx).^2+abs(dy).^2 );
   %  imedges= ( abs(dx).^7+abs(dy).^7 ).^(1/7);
   %  imedges= sqrt(dx.^2+dy.^2);
    % M(i,:) = moments9(reshape(imedges,r*c,3));
@@ -91,12 +100,22 @@ for k=1:K
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
         
-                sigma=5; 
-    % imsmooth = imgaussfilt(reshape(im,r,c,3),sigma); % only in R2015 :(
-    H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
-    imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
-    [dx,dy] = makegradient(imsmooth);
-    imedges= sqrt( dx.^2+dy.^2 );
+%         sigma=5; 
+%     % imsmooth = imgaussfilt(reshape(im,r,c,3),sigma); % only in R2015 :(
+%     H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
+%     imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
+%     [dx,dy] = makegradient(imsmooth);
+         mink_norm=7;    % any number between 1 and infinity
+         sigma=1.5;        % sigma 
+          im =   reshape(im,r,c,3);
+         [Rx,Gx,Bx] = norm_derivative(im,sigma,1);
+         clear imedges;
+         imedges(:,:,1) = Rx;
+         imedges(:,:,2) = Gx;
+         imedges(:,:,3) = Bx;
+         imedges = abs(imedges);
+
+   % imedges= sqrt( abs(dx).^2+abs(dy).^2 );
   %  imedges= ( abs(dx).^7+abs(dy).^7 ).^(1/7);
   %  imedges= sqrt(dx.^2+dy.^2);
    % M(i,:) = moments9(reshape(imedges,r*c,3));

@@ -1,0 +1,30 @@
+
+input_im=double(imread('building1.jpg'));
+figure(1);imshow(uint8(input_im));
+title('input image');
+
+% Grey-World
+[wR,wG,wB,out1]=general_cc(input_im,0,1,0);
+figure(2);imshow(uint8(out1));
+title('Grey-World');
+
+% max-RGb
+[wR,wG,wB,out2]=general_cc(input_im,0,-1,0);
+figure(2);imshow(uint8(out2));
+title('max-RGB');
+
+% Shades of Grey
+mink_norm=5;    % any number between 
+[wR,wG,wB,out3]=general_cc(input_im,0,mink_norm,0);
+figure(2);imshow(uint8(out1));
+title('Grey-World');
+
+% Grey-World
+[wR,wG,wB,out1]=general_cc(input_im,0,1,0);
+figure(2);imshow(uint8(out1));
+title('Grey-World');
+
+% Grey-World
+[wR,wG,wB,out1]=general_cc(input_im,0,1,0);
+figure(2);imshow(uint8(out1));
+title('Grey-World');

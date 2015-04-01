@@ -9,7 +9,7 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/sfudataset/allImageFourthResolution.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('../dataSet/sfudataset/allImageOriginal.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 allcanon5Dsmall = allImage;clear allImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
@@ -30,8 +30,8 @@ trainbot=1;
 traintop=floor(2*howmanycands/3) % 321
 
 K = 3;
-run_times = 5;
-results = zeros(K*run_times,6);
+run_times = 3;
+results = zeros(K*run_times,5);
 
 for t=1:run_times
     % Generate cross-validation indices
@@ -93,7 +93,7 @@ for k=1:K
         
                 sigma=5; 
     % imsmooth = imgaussfilt(reshape(im,r,c,3),sigma); % only in R2015 :(
-    H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
+    H = fspecial('gaussian', [ 5], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
     imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
     [dx,dy] = makegradient(imsmooth);
     imedges= sqrt( dx.^2+dy.^2 );
@@ -109,7 +109,7 @@ for k=1:K
     end % for i
    
    results((t-1)*K+k,:) =  [mean(allangerrs), median(allangerrs), trimean(allangerrs), ...
-        min(allangerrs), quantile(allangerrs,0.95) , max(allangerrs)];
+        min(allangerrs), quantile(allangerrs,0.95)];
     results((t-1)*K+k,:)
     % 3.2526    2.4019    2.5301    0.0396    8.5540
 end
