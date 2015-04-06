@@ -1,6 +1,7 @@
 Paper
 *.zip
 *.jpg
+test_tmp
 *.mat
 *grayBall/
 *dataSet
