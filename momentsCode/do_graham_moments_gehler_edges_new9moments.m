@@ -9,12 +9,12 @@ clear all;
 %   NO: writesmallGehlerImages;
 % makesmallGehlerImages;  % makes allcanon5Dsmall
 %    readgehler;
-load ('../dataSet/sfudataset/allImageFourthResolutionNoFilter.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
+load ('/home/xca64/remote/GitHub/colorP/dataSet/sfudataset/allImageMedFilter4.mat') % allcanon5Dsmall = zeros(482,183,275,3); % all portrait
 allcanon5Dsmall = allImage;clear allImage;
 [howmanycands, r,c, n3] = size(allcanon5Dsmall); % 482   183   275 3
 % getGehlerLights; % gets alllightschrom
 
-load('../dataSet/sfudataset/sfuIllum.mat');
+load('/home/xca64/remote/GitHub/colorP/dataSet/sfudataset/sfuIllum.mat');
 alllights=sfuIllum; clear sfuIllum % 482 5DCimages
 
 % what is grey? (for this camera):
@@ -34,8 +34,13 @@ sigma = 0.75;
 diff_order = 1;
 
 K = 3;
-run_times = 10;
+run_times = 5;
 results = zeros(K*run_times,5);
+
+%for imsize = 0.1:0.1:0.6
+%    for sigma = 0.25:0.5:2.5
+imsize = 0.3;
+sigma = 2;
 
 for t=1:run_times
     % Generate cross-validation indices
@@ -55,14 +60,20 @@ for k=1:K
         lum = sum(im,2);
         bright = lum>quantile(lum,0.95);
         
-    H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
-    imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
-        
+  %  H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
+ %   tmp = imfilter(reshape(im,r,c,3),H,'replicate');
+ %   tmp = mymedfilt3(reshape(im,r,c,3),[5,5]);
+  %   imsmooth = imresize(tmp,imsize);
+%    [r_reshaped,c_reshaped, n3_reshaped] = size(imsmooth);
+       imsmooth = reshape(im,r,c,3);
         [dx,dy] = makegradient(imsmooth);
+    %   [dx, dy] = norm_derivative_separate_dxdy(imsmooth,sigma,1);
       %  imedges= sqrt( dx.^2+dy.^2 );
       %  imedges=reshape(imedges,r*c,3);
-         dx=reshape(dx,r*c,3);
-         dy=reshape(dy,r*c,3);
+     %    dx=reshape(dx,r_reshaped*c_reshaped,3);
+    %     dy=reshape(dy,r_reshaped*c_reshaped,3);
+     dx=reshape(dx,r*c,3);
+     dy=reshape(dy,r*c,3);
         M(i,:) = moments9_edges(dx,dy); % 65 x 18
 
     
@@ -98,15 +109,20 @@ for k=1:K
 %        imedges= sqrt( dx.^2+dy.^2 );
 %        imedges=reshape(imedges,r*c,3);
 
-       H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
-    imsmooth = imfilter(reshape(im,r,c,3),H,'replicate');
-        
+   %    H = fspecial('gaussian', [3 3], sigma) ; % default value for hsize is [3 3]; the default value for sigma is 0.5. 
+  %    tmp = imfilter(reshape(im,r,c,3),H,'replicate');
+ %  tmp = mymedfilt3(reshape(im,r,c,3),[5,5]);
+ %    imsmooth = imresize(tmp,imsize);
+    %    [r_reshaped,c_reshaped, n3_reshaped] = size(imsmooth);
+        imsmooth = reshape(im,r,c,3);
         [dx,dy] = makegradient(imsmooth);
+    %   [dx, dy] = norm_derivative_separate_dxdy(imsmooth,sigma,1);
       %  imedges= sqrt( dx.^2+dy.^2 );
       %  imedges=reshape(imedges,r*c,3);
-         dx=reshape(dx,r*c,3);
-         dy=reshape(dy,r*c,3);
-        %M(i,:) = 
+      %   dx=reshape(dx,r_reshaped*c_reshaped,3);
+       %  dy=reshape(dy,r_reshaped*c_reshaped,3);
+       dx=reshape(dx,r*c,3);
+       dy=reshape(dy,r*c,3);
         
         anM = moments9_edges(dx,dy); % 65 x 18
        % anM = moments9(imedges);
@@ -120,9 +136,13 @@ for k=1:K
     % 3.2526    2.4019    2.5301    0.0396    8.5540
 end
 end
+
 mea = mean(results)
 std1 = std(results)
-
+%mea(int8(imsize*10),int8((sigma*4)/2),:) = mean(results)
+%std1(int8(imsize*10),int8((sigma*4)/2),:) = std(results)
+%    end
+%end
 % 
 % %% PRIOR ART:
 % allpriorerrs=zeros(howmanycands,4);
