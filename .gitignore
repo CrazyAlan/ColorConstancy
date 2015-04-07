@@ -3,4 +3,5 @@ Paper
 *.jpg
 *.mat
 *grayBall/
+test_tmp
 *dataSet
