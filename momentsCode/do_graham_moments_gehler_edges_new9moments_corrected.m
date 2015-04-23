@@ -40,7 +40,7 @@ results = zeros(K*run_times,5);
 %for imsize = 0.1:0.1:0.6
 %    for sigma = 0.25:0.5:2.5
 imsize = 0.3;
-sigma = 2;
+sigma = 2.0;
 
 for t=1:run_times
     % Generate cross-validation indices
@@ -74,7 +74,7 @@ for k=1:K
         dy=reshape(dy,r_reshaped*c_reshaped,3);
 %      dx=reshape(dx,r*c,3);
 %      dy=reshape(dy,r*c,3);
-        M(i,:) = moments9_edges(dx,dy); % 65 x 18
+        M(i,:) = moments9_edges_correct(dx,dy); % 65 x 18
 
     
        % M(i,:) = moments9(imedges);
@@ -124,7 +124,7 @@ for k=1:K
 %        dx=reshape(dx,r*c,3);
 %        dy=reshape(dy,r*c,3);
         
-        anM = moments9_edges(dx,dy); % 65 x 18
+        anM =moments9_edges_correct(dx,dy); % 65 x 18
        % anM = moments9(imedges);
         chromout(i,:) = makechrom3vec( anM*C );
         allangerrs(i) =  multiangle(chrom_truth(i,:),chromout(i,:)); % degrees
